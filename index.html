@@ -3,21 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="JnA Motors — custom builds, restorations, and mechanical work. Outboard motors, cafe racers, Harley-Davidson, and more.">
   <title>JnA Motors</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="page-home">
   <nav class="nav">
+    <a href="index.html" class="nav-brand">JnA Motors</a>
     <a href="index.html" class="nav-link">Home</a>
     <a href="projects.html" class="nav-link">Projects</a>
+    <a href="harley-work.html" class="nav-link">Harley Work</a>
     <a href="games.html" class="nav-link">Games</a>
   </nav>
   <main class="hero">
-    <img 
-      src="JnA Motors Sign.jpg" 
-      alt="JnA Motors Sign" 
+    <img
+      src="JnA Motors Sign.jpg"
+      alt="JnA Motors Sign"
       class="hero-image"
     >
+    <div class="hero-text">
+      <h1 class="hero-title">JnA Motors</h1>
+      <p class="hero-tagline">Custom builds, restorations &amp; mechanical work</p>
+    </div>
   </main>
+  <footer class="site-footer">
+    <p>© <span id="year"></span> JnA Motors</p>
+  </footer>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>

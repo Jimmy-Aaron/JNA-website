@@ -1,3 +1,66 @@
+.games-index .page-description {
+  margin-bottom: 1.5rem;
+}
+
+.game-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
+.game-card {
+  display: block;
+  padding: 1.25rem 1.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid #333;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.game-card:hover {
+  border-color: #c9a227;
+  background: rgba(201, 162, 39, 0.08);
+}
+
+.game-card-title {
+  color: #fff;
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.game-card-desc {
+  color: #a0a0a0;
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.game-card-play {
+  color: #c9a227;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.game-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #333;
+  scroll-margin-top: 1rem;
+}
+
+.game-section-title {
+  color: #e0e0e0;
+  font-size: 1.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.game-section .page-description {
+  margin-bottom: 1rem;
+}
+
 .game-page .page-description {
   margin-bottom: 1rem;
 }

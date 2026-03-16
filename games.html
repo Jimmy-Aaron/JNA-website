@@ -3,31 +3,54 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Play Breakout and other games on JnA Motors.">
   <title>Games — JnA Motors</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="game.css">
 </head>
-<body>
+<body class="page-games">
   <nav class="nav">
+    <a href="index.html" class="nav-brand">JnA Motors</a>
     <a href="index.html" class="nav-link">Home</a>
     <a href="projects.html" class="nav-link">Projects</a>
+    <a href="harley-work.html" class="nav-link">Harley Work</a>
     <a href="games.html" class="nav-link">Games</a>
   </nav>
-  <main class="page-content game-page">
-    <h1 class="page-title">Breakout</h1>
-    <p class="page-description">Move the paddle with your mouse or arrow keys. Break all the bricks without losing the ball!</p>
-    <div class="game-hud">
-      <span class="hud-score">Score: <strong id="score">0</strong></span>
-      <span class="hud-lives">Lives: <strong id="lives">3</strong></span>
+  <main class="page-content games-index">
+    <h1 class="page-title">Games</h1>
+    <p class="page-description">Pick a game below.</p>
+    <div class="game-cards">
+      <a href="games.html#breakout-game" class="game-card" id="breakout">
+        <h2 class="game-card-title">Breakout</h2>
+        <p class="game-card-desc">Move the paddle with your mouse or arrow keys. Break all the bricks without losing the ball!</p>
+        <span class="game-card-play">Play →</span>
+      </a>
+      <a href="tetris.html" class="game-card">
+        <h2 class="game-card-title">Tetris</h2>
+        <p class="game-card-desc">Clear lines with falling blocks. Hold piece, ghost piece, levels, and increasing speed. Deep and addictive.</p>
+        <span class="game-card-play">Play →</span>
+      </a>
     </div>
-    <div class="game-wrap">
-      <canvas id="gameCanvas" width="800" height="500"></canvas>
-      <div id="gameOverlay" class="game-overlay">
-        <p id="overlayText" class="overlay-text">Click or press Space to start</p>
-        <button id="restartBtn" class="restart-btn" style="display: none;">Play again</button>
+    <div id="breakout-game" class="game-section">
+      <h2 class="game-section-title">Breakout</h2>
+      <p class="page-description">Move the paddle with your mouse or arrow keys. Break all the bricks without losing the ball!</p>
+      <div class="game-hud">
+        <span class="hud-score">Score: <strong id="score">0</strong></span>
+        <span class="hud-lives">Lives: <strong id="lives">3</strong></span>
+      </div>
+      <div class="game-wrap">
+        <canvas id="gameCanvas" width="800" height="500"></canvas>
+        <div id="gameOverlay" class="game-overlay">
+          <p id="overlayText" class="overlay-text">Click or press Space to start</p>
+          <button id="restartBtn" class="restart-btn" style="display: none;">Play again</button>
+        </div>
       </div>
     </div>
   </main>
+  <footer class="site-footer">
+    <p>© <span id="year"></span> JnA Motors</p>
+  </footer>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
   <script src="game.js"></script>
 </body>
 </html>

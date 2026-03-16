@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Play Tetris on JnA Motors — classic falling blocks with next piece, hold, ghost, and levels.">
+  <title>Tetris — JnA Motors</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="tetris.css">
+</head>
+<body class="page-games">
+  <nav class="nav">
+    <a href="index.html" class="nav-brand">JnA Motors</a>
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="projects.html" class="nav-link">Projects</a>
+    <a href="harley-work.html" class="nav-link">Harley Work</a>
+    <a href="games.html" class="nav-link">Games</a>
+  </nav>
+  <main class="page-content tetris-page">
+    <h1 class="page-title">Tetris</h1>
+    <p class="page-description">Clear lines with falling blocks. Speed increases every 10 lines. Use Hold and ghost piece to plan ahead!</p>
+    <div class="tetris-layout">
+      <div class="tetris-side">
+        <div class="tetris-panel">
+          <h3>Hold</h3>
+          <canvas id="tetrisHoldCanvas" width="70" height="70"></canvas>
+        </div>
+        <div class="tetris-panel">
+          <h3>Score</h3>
+          <div class="tetris-hud">
+            <span>Score: <strong id="tetrisScore">0</strong></span>
+            <span>Level: <strong id="tetrisLevel">1</strong></span>
+            <span>Lines: <strong id="tetrisLines">0</strong></span>
+          </div>
+        </div>
+        <div class="tetris-panel">
+          <h3>Next</h3>
+          <canvas id="tetrisNextCanvas" width="70" height="70"></canvas>
+        </div>
+      </div>
+      <div class="tetris-main">
+        <canvas id="tetrisCanvas"></canvas>
+        <div id="tetrisOverlay" class="tetris-overlay">
+          <p id="tetrisOverlayText" class="tetris-overlay-text">Press Space or click to start</p>
+          <button id="tetrisRestartBtn" class="tetris-restart-btn" style="display: none;">Play again</button>
+        </div>
+      </div>
+    </div>
+    <div class="tetris-controls">
+      <p><kbd>←</kbd> <kbd>→</kbd> Move &nbsp; <kbd>↓</kbd> Soft drop &nbsp; <kbd>↑</kbd> / <kbd>X</kbd> Rotate CW &nbsp; <kbd>Z</kbd> / <kbd>Ctrl</kbd> Rotate CCW</p>
+      <p><kbd>Space</kbd> Hard drop &nbsp; <kbd>C</kbd> Hold piece</p>
+    </div>
+  </main>
+  <footer class="site-footer">
+    <p>© <span id="year"></span> JnA Motors</p>
+  </footer>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="tetris.js"></script>
+</body>
+</html>
