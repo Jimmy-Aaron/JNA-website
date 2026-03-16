@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Games — JnA Motors</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="game.css">
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="projects.html" class="nav-link">Projects</a>
+    <a href="games.html" class="nav-link">Games</a>
+  </nav>
+  <main class="page-content game-page">
+    <h1 class="page-title">Breakout</h1>
+    <p class="page-description">Move the paddle with your mouse or arrow keys. Break all the bricks without losing the ball!</p>
+    <div class="game-hud">
+      <span class="hud-score">Score: <strong id="score">0</strong></span>
+      <span class="hud-lives">Lives: <strong id="lives">3</strong></span>
+    </div>
+    <div class="game-wrap">
+      <canvas id="gameCanvas" width="800" height="500"></canvas>
+      <div id="gameOverlay" class="game-overlay">
+        <p id="overlayText" class="overlay-text">Click or press Space to start</p>
+        <button id="restartBtn" class="restart-btn" style="display: none;">Play again</button>
+      </div>
+    </div>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>
