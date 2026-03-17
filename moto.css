@@ -1,0 +1,78 @@
+.moto-page .page-description {
+  margin-bottom: 1rem;
+}
+
+.moto-wrap {
+  position: relative;
+  display: inline-block;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  background: #0d0d0d;
+}
+
+#motoCanvas {
+  display: block;
+  background: #87CEEB;
+}
+
+.moto-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.75);
+  transition: opacity 0.2s;
+}
+
+.moto-overlay.hidden {
+  pointer-events: none;
+  opacity: 0;
+}
+
+.moto-overlay-text {
+  color: #fff;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.moto-restart-btn {
+  padding: 0.6rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  background: #c9a227;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.moto-restart-btn:hover {
+  background: #e0b83a;
+}
+
+.moto-controls {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  color: #a0a0a0;
+  font-size: 0.85rem;
+}
+
+.moto-controls p {
+  margin-bottom: 0.35rem;
+}
+
+.moto-controls kbd {
+  display: inline-block;
+  padding: 0.15rem 0.4rem;
+  background: #333;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.8em;
+}

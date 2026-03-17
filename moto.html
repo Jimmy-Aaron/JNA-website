@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dirt bike moto game — ride the terrain, land clean, go the distance. JnA Motors.">
+  <title>Dirt Bike Moto — JnA Motors</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="moto.css">
+</head>
+<body class="page-games">
+  <nav class="nav">
+    <a href="index.html" class="nav-brand">JnA Motors</a>
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="projects.html" class="nav-link">Projects</a>
+    <a href="harley-work.html" class="nav-link">Harley Work</a>
+    <a href="games.html" class="nav-link">Games</a>
+  </nav>
+  <main class="page-content moto-page">
+    <h1 class="page-title">Dirt Bike Moto</h1>
+    <p class="page-description">Ride the hills. Hold gas to accelerate, lean with arrow keys. Land clean to avoid wiping out. How far can you go?</p>
+    <div class="game-hud">
+      <span class="hud-score">Distance: <strong id="motoScore">0</strong> m</span>
+    </div>
+    <div class="moto-wrap">
+      <canvas id="motoCanvas"></canvas>
+      <div id="motoOverlay" class="moto-overlay">
+        <p id="motoOverlayText" class="moto-overlay-text">Press Space or Up to start</p>
+        <button id="motoRestartBtn" class="moto-restart-btn" style="display: none;">Ride again</button>
+      </div>
+    </div>
+    <div class="moto-controls">
+      <p><kbd>↑</kbd> or <kbd>Space</kbd> Gas &nbsp; <kbd>←</kbd> <kbd>→</kbd> Lean / tilt in air</p>
+    </div>
+  </main>
+  <footer class="site-footer">
+    <p>© <span id="year"></span> JnA Motors</p>
+  </footer>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="moto.js"></script>
+</body>
+</html>

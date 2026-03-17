@@ -159,9 +159,12 @@
     lines += linesCleared;
     const prevLevel = level;
     level = Math.floor(lines / LINES_PER_LEVEL);
-    if (level > prevLevel && dropIntervalId) {
-      clearInterval(dropIntervalId);
-      scheduleDrop();
+    if (level > prevLevel) {
+      if (window.TetrisAudio) TetrisAudio.play('levelup');
+      if (dropIntervalId) {
+        clearInterval(dropIntervalId);
+        scheduleDrop();
+      }
     }
     scoreEl.textContent = score;
     levelEl.textContent = level + 1;
@@ -206,8 +209,10 @@
 
   function lockPiece() {
     if (!currentPiece) return;
+    if (window.TetrisAudio) TetrisAudio.play('lock');
     mergePiece(currentPiece);
     const cleared = clearLines();
+    if (cleared > 0 && window.TetrisAudio) TetrisAudio.play('lineclear', cleared);
     addScore(cleared);
     currentPiece = null;
     spawnNext();
@@ -380,6 +385,10 @@
     running = true;
     overlay.classList.add('hidden');
     restartBtn.style.display = 'none';
+    if (window.TetrisAudio) {
+      TetrisAudio.init();
+      TetrisAudio.startMusic();
+    }
     spawnNext();
     scheduleDrop();
     gameLoop();
@@ -390,6 +399,10 @@
     if (dropIntervalId) {
       clearInterval(dropIntervalId);
       dropIntervalId = null;
+    }
+    if (window.TetrisAudio) {
+      TetrisAudio.stopMusic();
+      TetrisAudio.play('gameover');
     }
     overlay.classList.remove('hidden');
     overlayText.textContent = 'Game over! Score: ' + score;
