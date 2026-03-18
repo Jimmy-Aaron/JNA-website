@@ -30,6 +30,16 @@
   const GROUND_MIN = GROUND_BASE - 170;
   const GROUND_MAX = GROUND_BASE + 95;
 
+  // Jet (rocket boost) power
+  const JET_THRUST = 0.85; // extra vx while holding J
+  const JET_MAX_VX = 18; // soft cap for stability
+
+  // Jet particles (purely visual)
+  const JET_PARTICLES_MAX = 180;
+  const JET_PARTICLE_GRAVITY = 0.16;
+  const JET_PARTICLE_LIFE_MIN = 18;
+  const JET_PARTICLE_LIFE_MAX = 30;
+
   let running = false;
   let score = 0;
   let terrain = [];
@@ -46,6 +56,7 @@
   let suspensionPos = 0;
   let suspensionVel = 0;
   let wasOnGround = false;
+  let jetParticles = [];
 
   function rnd() {
     seed = (seed * 9301 + 49297) % 233280;
@@ -328,6 +339,35 @@
     const headX = frontX - 6;
     const headY = -18;
 
+    function drawJet() {
+      for (let i = 0; i < jetParticles.length; i++) {
+        const p = jetParticles[i];
+        if (p.life <= 0) continue;
+
+        const x = p.x;
+        const y = p.y;
+
+        ctx.globalAlpha = p.alpha;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        // Small flame-ish triangle
+        ctx.moveTo(x, y);
+        ctx.lineTo(x - p.size * 0.25, y + p.size);
+        ctx.lineTo(x + p.size * 0.25, y + p.size);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.globalAlpha = p.alpha * 0.55;
+        ctx.fillStyle = '#fff4c2';
+        ctx.beginPath();
+        ctx.arc(x - p.size * 0.08, y + p.size * 0.35, p.size * 0.22, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    drawJet();
+
     function wheel(cx) {
       // Tire
       ctx.fillStyle = '#141414';
@@ -336,14 +376,14 @@
       ctx.fill();
 
       // Rim
-      ctx.strokeStyle = '#4a4a4a';
+      ctx.strokeStyle = '#c9a227';
       ctx.lineWidth = 3;
       ctx.beginPath();
       ctx.arc(cx, 0, WHEEL_R - 2, 0, Math.PI * 2);
       ctx.stroke();
 
       // Spokes
-      ctx.strokeStyle = '#6b6b6b';
+      ctx.strokeStyle = '#b78b2d';
       ctx.lineWidth = 1;
       for (let i = 0; i < 10; i++) {
         const a = (i / 10) * Math.PI * 2;
@@ -382,8 +422,8 @@
     ctx.stroke();
 
     // Tank (rounded polygon)
-    ctx.fillStyle = '#3a2a2a';
-    ctx.strokeStyle = '#5c4033';
+    ctx.fillStyle = '#0e8fb8';
+    ctx.strokeStyle = '#043b4d';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(-10, -12);
@@ -392,6 +432,14 @@
     ctx.quadraticCurveTo(-2, -8, -10, -6);
     ctx.closePath();
     ctx.fill();
+    ctx.stroke();
+
+    // Tank stripe
+    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(-8, -10);
+    ctx.quadraticCurveTo(-1, -15, 6, -10);
     ctx.stroke();
 
     // Seat
@@ -457,8 +505,9 @@
     ctx.quadraticCurveTo(headX + 10, headY - 20, headX + 20, headY - 6);
     ctx.stroke();
     ctx.beginPath();
+    // Right bar leg down to the grip
     ctx.moveTo(headX + 20, headY - 6);
-    ctx.lineTo(headX + 20, headY - 6);
+    ctx.lineTo(headX + 22, headY - 3);
     ctx.stroke();
 
     // Hand grips (simple)
@@ -478,6 +527,34 @@
     ctx.lineTo(rearX + 10, -10);
     ctx.stroke();
 
+    // Front fender (small)
+    ctx.strokeStyle = '#2c2c2c';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(frontX - 10, -4);
+    ctx.lineTo(frontX + 2, -16);
+    ctx.stroke();
+
+    // Jet flame core (draw on top for readability)
+    if (keys['j'] || keys['J']) {
+      const coreX = rearX - 8;
+      const coreY = -8;
+      ctx.globalAlpha = 0.95;
+      ctx.fillStyle = '#ff6a00';
+      ctx.beginPath();
+      ctx.moveTo(coreX, coreY);
+      ctx.lineTo(coreX - 6, coreY + 14);
+      ctx.lineTo(coreX + 6, coreY + 14);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#ffd36b';
+      ctx.beginPath();
+      ctx.arc(coreX, coreY + 7, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
     // Rider (optional but helps "bike" read)
     ctx.fillStyle = '#0f0f0f';
     ctx.strokeStyle = '#333';
@@ -496,12 +573,14 @@
     ctx.restore();
   }
 
-  function updateBike(throttle, tilt) {
+  function updateBike(throttle, tilt, jetActive) {
     if (!bike) return;
     extendTerrain();
     bike.vx *= FRICTION_AIR;
     bike.vy *= FRICTION_AIR;
     if (throttle) bike.vx += THROTTLE;
+    if (jetActive) bike.vx += JET_THRUST;
+    if (bike.vx > JET_MAX_VX) bike.vx = JET_MAX_VX;
     bike.vy += GRAVITY;
     bike.x += bike.vx;
     bike.y += bike.vy;
@@ -510,20 +589,74 @@
     bike.angleSpeed = Math.max(-MAX_ANGLE_SPEED, Math.min(MAX_ANGLE_SPEED, bike.angleSpeed));
     bike.angle += bike.angleSpeed;
 
+    // Update jet particles in bike-local space.
+    if (!jetParticles) jetParticles = [];
+    const half = BIKE_LENGTH / 2;
+    const spawnX = -half - 8;
+    const spawnY = -8;
+    if (jetActive) {
+      for (let i = 0; i < 4; i++) {
+        if (jetParticles.length >= JET_PARTICLES_MAX) break;
+        const life = JET_PARTICLE_LIFE_MIN + Math.floor(Math.random() * (JET_PARTICLE_LIFE_MAX - JET_PARTICLE_LIFE_MIN + 1));
+        const vx = -(1.8 + Math.random() * 3.2);
+        const vy = (Math.random() - 0.5) * 1.2 - 0.2;
+        const size = 3 + Math.random() * 4;
+        const colorRoll = Math.random();
+        const color = colorRoll > 0.7 ? '#ff4d00' : colorRoll > 0.35 ? '#ff9b2f' : '#ffd36b';
+        jetParticles.push({
+          x: spawnX + (Math.random() - 0.5) * 3,
+          y: spawnY + (Math.random() - 0.5) * 3,
+          vx,
+          vy,
+          size,
+          life,
+          maxLife: life,
+          alpha: 1,
+          color
+        });
+      }
+    }
+    for (let i = jetParticles.length - 1; i >= 0; i--) {
+      const p = jetParticles[i];
+      p.life -= 1;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += JET_PARTICLE_GRAVITY;
+      p.alpha = Math.max(0, p.life / p.maxLife);
+      if (p.life <= 0) jetParticles.splice(i, 1);
+    }
+
     const { back, front } = getWheelPositions();
     const gBack = getGroundAt(back.x);
     const gFront = getGroundAt(front.x);
-    const onGroundBack = back.y >= gBack.y - 4 && back.y <= gBack.y + 14;
-    const onGroundFront = front.y >= gFront.y - 4 && front.y <= gFront.y + 14;
+
+    // Wheel contact forgiveness shrinks when moving fast,
+    // so you can actually pop off hills/bumps.
+    const speed = Math.abs(bike.vx);
+    const marginAbove = Math.max(1.5, 4 - Math.min(2, speed * 0.15));
+    const marginBelow = Math.max(10, 14 - Math.min(4, speed * 0.3));
+
+    const onGroundBack = back.y >= gBack.y - marginAbove && back.y <= gBack.y + marginBelow;
+    const onGroundFront = front.y >= gFront.y - marginAbove && front.y <= gFront.y + marginBelow;
     const onGroundNow = onGroundBack || onGroundFront;
+    const wasOnGroundPrev = wasOnGround;
 
     // When we touch down after being in the air, compress the suspension visually.
     // Physics collision remains as-is; we only add a small rendered "sink" and rebound.
-    if (!wasOnGround && onGroundNow) {
+    if (!wasOnGroundPrev && onGroundNow) {
       const impact = Math.max(0, Math.min(1, bike.vy / 10));
       // Start with a little compression, then allow spring to move further.
       suspensionPos = Math.max(suspensionPos, impact * 2);
       suspensionVel = Math.max(suspensionVel, impact * 4 + 0.5);
+    }
+    // If we just left the ground at decent speed, kick the bike up a bit
+    // to simulate a dirt-bike takeoff.
+    if (wasOnGroundPrev && !onGroundNow) {
+      const speed = Math.abs(bike.vx);
+      if (speed > 3) {
+        const lift = Math.min(10, (speed - 3) * 0.35) * (jetActive ? 1.25 : 1.0);
+        bike.vy -= lift;
+      }
     }
     wasOnGround = onGroundNow;
 
@@ -571,10 +704,11 @@
   function loop() {
     if (!running || !bike) return;
     const throttle = keys[' '] || keys['ArrowUp'];
+    const jetActive = keys['j'] || keys['J'];
     // Invert so arrow directions feel natural:
     //   Left (lean back) should lean "back", Right (lean forward) should lean "forward".
     const tilt = (keys['ArrowLeft'] ? 1 : 0) - (keys['ArrowRight'] ? 1 : 0);
-    const crashed = updateBike(throttle, tilt);
+    const crashed = updateBike(throttle, tilt, jetActive);
     score = bike.x;
     scoreEl.textContent = Math.floor(score);
     cameraX = bike.x - CAMERA_LEAD;
@@ -616,6 +750,7 @@
     trees = [];
     nextTreeX = -200;
     groundPattern = null;
+    jetParticles = [];
     suspensionPos = 0;
     suspensionVel = 0;
     wasOnGround = false;
@@ -635,6 +770,7 @@
     trees = [];
     nextTreeX = -200;
     groundPattern = null;
+    jetParticles = [];
     suspensionPos = 0;
     suspensionVel = 0;
     wasOnGround = false;
