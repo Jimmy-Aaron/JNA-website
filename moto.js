@@ -22,12 +22,30 @@
   const SEGMENT_LENGTH = 80;
   const MAX_SLOPE = 0.45;
 
+  // Terrain shaping
+  const JUMP_CHANCE = 0.08;
+  const JUMP_SEGMENTS = 5;
+  const JUMP_BOOST_MIN = 90;
+  const JUMP_BOOST_MAX = 160;
+  const GROUND_MIN = GROUND_BASE - 170;
+  const GROUND_MAX = GROUND_BASE + 95;
+
   let running = false;
   let score = 0;
   let terrain = [];
   let bike = null;
   let cameraX = 0;
   let seed = 0;
+  let baseSeed = 0;
+  let trees = [];
+  let nextTreeX = 0;
+  let groundPattern = null;
+  let jumpState = { remaining: 0, total: 0, boost: 0 };
+  // Suspension "compression" visual after landing (big jump feel).
+  // Positive pushes the sprite down; physics collision stays unchanged.
+  let suspensionPos = 0;
+  let suspensionVel = 0;
+  let wasOnGround = false;
 
   function rnd() {
     seed = (seed * 9301 + 49297) % 233280;
@@ -36,6 +54,9 @@
 
   function initTerrain() {
     terrain = [];
+    jumpState.remaining = 0;
+    jumpState.total = 0;
+    jumpState.boost = 0;
     let x = -200;
     let y = GROUND_BASE;
     while (x < 5000) {
@@ -43,7 +64,22 @@
       const bump = (rnd() - 0.5) * 55;
       const ramp = (rnd() - 0.45) * 50;
       let nextY = y + bump + ramp;
-      nextY = Math.max(GROUND_BASE - 100, Math.min(GROUND_BASE + 60, nextY));
+
+      // Occasionally lift the ground into a jump arc.
+      if (jumpState.remaining <= 0 && x > 150 && rnd() < JUMP_CHANCE) {
+        jumpState.total = JUMP_SEGMENTS;
+        jumpState.remaining = JUMP_SEGMENTS;
+        jumpState.boost = JUMP_BOOST_MIN + rnd() * (JUMP_BOOST_MAX - JUMP_BOOST_MIN);
+      }
+      if (jumpState.remaining > 0) {
+        const jumpIndex = jumpState.total - jumpState.remaining;
+        const progress = jumpIndex / (jumpState.total - 1);
+        const factor = Math.sin(Math.PI * progress);
+        nextY += factor * jumpState.boost;
+        jumpState.remaining -= 1;
+      }
+
+      nextY = Math.max(GROUND_MIN, Math.min(GROUND_MAX, nextY));
       let slope = (nextY - prevY) / SEGMENT_LENGTH;
       slope = Math.max(-MAX_SLOPE, Math.min(MAX_SLOPE, slope));
       nextY = prevY + slope * SEGMENT_LENGTH;
@@ -67,13 +103,133 @@
     return { y: GROUND_BASE, slope: 0 };
   }
 
+  function randAt(n) {
+    // Deterministic pseudo-random for visuals (does not affect physics).
+    const s = baseSeed || seed || 1;
+    const v = Math.sin((n + 1) * 12.9898 + s * 0.12345) * 43758.5453;
+    return v - Math.floor(v);
+  }
+
+  function getTerrainMaxX() {
+    if (!terrain.length) return 0;
+    return terrain[terrain.length - 1].x1;
+  }
+
+  function getGroundPattern() {
+    if (groundPattern) return groundPattern;
+    const c = document.createElement('canvas');
+    c.width = 64;
+    c.height = 64;
+    const p = c.getContext('2d');
+
+    // Base + stripe variation.
+    p.fillStyle = '#2d5016';
+    p.fillRect(0, 0, 64, 64);
+    for (let i = 0; i < 64; i += 6) {
+      p.fillStyle = i % 12 === 0 ? '#254b16' : '#1f3f12';
+      p.fillRect(i, 0, 3, 64);
+      p.fillStyle = i % 12 === 0 ? '#1a3009' : '#2a5a1d';
+      p.fillRect(i + 3, 0, 2, 64);
+    }
+
+    // Speckles (rocks/dirt).
+    for (let i = 0; i < 220; i++) {
+      const x = Math.floor(randAt(i * 3 + 99) * 64);
+      const y = Math.floor(randAt(i * 7 + 13) * 64);
+      const r = 1 + Math.floor(randAt(i * 11 + 1) * 2);
+      p.fillStyle = randAt(i * 17 + 3) > 0.5 ? '#1a3009' : '#244b16';
+      p.fillRect(x, y, r, r);
+    }
+
+    groundPattern = ctx.createPattern(c, 'repeat');
+    return groundPattern;
+  }
+
+  function ensureTreesUpTo(worldX) {
+    const maxX = getTerrainMaxX();
+    const targetX = Math.min(worldX, maxX);
+    while (nextTreeX < targetX) {
+      const idx = trees.length;
+      const spacing = 90 + randAt(200000 + idx * 17) * 140;
+      nextTreeX += spacing;
+      if (nextTreeX < 50) continue;
+
+      const h = 50 + randAt(300000 + idx * 19) * 90;
+      const variant = randAt(400000 + idx * 23);
+      trees.push({ x: nextTreeX, h, variant });
+    }
+  }
+
+  function drawBackground() {
+    const par = 0.35; // parallax strength
+    const s = 0.6; // overall distant scale
+
+    ensureTreesUpTo(cameraX + W + 600);
+    for (let i = 0; i < trees.length; i++) {
+      const t = trees[i];
+      const dx = t.x - cameraX;
+      if (dx < -120 || dx > W + 120) continue;
+
+      const screenX = dx * par;
+      const baseY = getGroundAt(t.x).y;
+
+      const trunkH = t.h * 0.35 * s;
+      const foliageH = t.h * 0.65 * s;
+
+      ctx.save();
+      ctx.translate(screenX, baseY);
+      ctx.globalAlpha = 0.55;
+
+      // Trunk
+      ctx.fillStyle = '#3a2a1a';
+      ctx.fillRect(-2, -trunkH, 4, trunkH);
+
+      // Foliage layers
+      const leaf1 = t.variant > 0.66 ? '#1f5a22' : t.variant > 0.33 ? '#1a4d1f' : '#16421a';
+      const leaf2 = t.variant > 0.66 ? '#1a4d1f' : t.variant > 0.33 ? '#175013' : '#123b16';
+
+      ctx.fillStyle = leaf2;
+      ctx.beginPath();
+      ctx.arc(0, -trunkH - foliageH * 0.3, foliageH * 0.42, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = leaf1;
+      ctx.beginPath();
+      ctx.arc(0, -trunkH - foliageH * 0.55, foliageH * 0.34, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = leaf2;
+      ctx.beginPath();
+      ctx.arc(0, -trunkH - foliageH * 0.75, foliageH * 0.26, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+  }
+
   function extendTerrain() {
     let last = terrain[terrain.length - 1];
     while (last.x1 < cameraX + W + 400) {
       const prevY = last.y1;
+      const segX = last.x1;
       const bump = (rnd() - 0.5) * 55;
       const ramp = (rnd() - 0.45) * 50;
-      let y = Math.max(GROUND_BASE - 100, Math.min(GROUND_BASE + 60, prevY + bump + ramp));
+      let y = Math.max(GROUND_MIN, Math.min(GROUND_MAX, prevY + bump + ramp));
+
+      // Occasionally lift the ground into a jump arc.
+      if (jumpState.remaining <= 0 && segX > 150 && rnd() < JUMP_CHANCE) {
+        jumpState.total = JUMP_SEGMENTS;
+        jumpState.remaining = JUMP_SEGMENTS;
+        jumpState.boost = JUMP_BOOST_MIN + rnd() * (JUMP_BOOST_MAX - JUMP_BOOST_MIN);
+      }
+      if (jumpState.remaining > 0) {
+        const jumpIndex = jumpState.total - jumpState.remaining;
+        const progress = jumpIndex / (jumpState.total - 1);
+        const factor = Math.sin(Math.PI * progress);
+        y += factor * jumpState.boost;
+        jumpState.remaining -= 1;
+      }
+
+      y = Math.max(GROUND_MIN, Math.min(GROUND_MAX, y));
+
       let slope = (y - prevY) / SEGMENT_LENGTH;
       slope = Math.max(-MAX_SLOPE, Math.min(MAX_SLOPE, slope));
       y = prevY + slope * SEGMENT_LENGTH;
@@ -107,7 +263,6 @@
   function drawTerrain() {
     const startX = cameraX - 50;
     const endX = cameraX + W + 50;
-    ctx.fillStyle = '#2d5016';
     ctx.beginPath();
     let started = false;
     for (let i = 0; i < terrain.length; i++) {
@@ -122,7 +277,36 @@
     }
     ctx.lineTo(endX - cameraX + 100, H);
     ctx.closePath();
+
+    // Base fill.
+    ctx.fillStyle = '#2d5016';
     ctx.fill();
+
+    // Pattern overlay + some texture strokes.
+    ctx.save();
+    ctx.clip();
+
+    ctx.globalAlpha = 0.22;
+    ctx.fillStyle = getGroundPattern();
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.globalAlpha = 0.55;
+    ctx.strokeStyle = '#1a3009';
+    ctx.lineWidth = 1;
+    const tuftStep = 55;
+    const xStart = Math.floor(startX / tuftStep) * tuftStep;
+    for (let x = xStart; x < endX; x += tuftStep) {
+      const g = getGroundAt(x);
+      const screenX = x - cameraX;
+      const len = 6 + randAt(x * 0.01) * 12;
+      const sway = (randAt(x * 0.02) - 0.5) * 3;
+      ctx.beginPath();
+      ctx.moveTo(screenX, g.y);
+      ctx.lineTo(screenX + sway, g.y - len);
+      ctx.stroke();
+    }
+    ctx.restore();
+
     ctx.strokeStyle = '#1a3009';
     ctx.lineWidth = 2;
     ctx.stroke();
@@ -130,7 +314,7 @@
 
   function drawBike() {
     const sx = bike.x - cameraX;
-    const sy = bike.y;
+    const sy = bike.y + suspensionPos;
     const half = BIKE_LENGTH / 2;
 
     ctx.save();
@@ -331,6 +515,25 @@
     const gFront = getGroundAt(front.x);
     const onGroundBack = back.y >= gBack.y - 4 && back.y <= gBack.y + 14;
     const onGroundFront = front.y >= gFront.y - 4 && front.y <= gFront.y + 14;
+    const onGroundNow = onGroundBack || onGroundFront;
+
+    // When we touch down after being in the air, compress the suspension visually.
+    // Physics collision remains as-is; we only add a small rendered "sink" and rebound.
+    if (!wasOnGround && onGroundNow) {
+      const impact = Math.max(0, Math.min(1, bike.vy / 10));
+      // Start with a little compression, then allow spring to move further.
+      suspensionPos = Math.max(suspensionPos, impact * 2);
+      suspensionVel = Math.max(suspensionVel, impact * 4 + 0.5);
+    }
+    wasOnGround = onGroundNow;
+
+    // Damped spring toward 0 displacement.
+    const k = onGroundNow ? 0.22 : 0.08;
+    const d = onGroundNow ? 0.82 : 0.35;
+    const acc = -k * suspensionPos - d * suspensionVel;
+    suspensionVel += acc;
+    suspensionPos += suspensionVel;
+    suspensionPos = Math.max(-2, Math.min(12, suspensionPos));
 
     if (onGroundBack && onGroundFront) {
       const slope = (gFront.y - gBack.y) / (front.x - back.x);
@@ -382,6 +585,7 @@
     gradient.addColorStop(1, 'rgba(70, 130, 180, 0.5)');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, W, H);
+    drawBackground();
     drawTerrain();
     drawBike();
     if (crashed) {
@@ -406,6 +610,13 @@
 
   function startGame() {
     seed = Date.now() % 100000;
+    baseSeed = seed;
+    trees = [];
+    nextTreeX = 0;
+    groundPattern = null;
+    suspensionPos = 0;
+    suspensionVel = 0;
+    wasOnGround = false;
     initTerrain();
     initBike();
     score = 0;
@@ -418,9 +629,25 @@
 
   function init() {
     seed = Date.now() % 100000;
+    baseSeed = seed;
+    trees = [];
+    nextTreeX = 0;
+    groundPattern = null;
+    suspensionPos = 0;
+    suspensionVel = 0;
+    wasOnGround = false;
     initTerrain();
     initBike();
     cameraX = 0;
+    // Initial background so the overlay looks good before you start.
+    ctx.fillStyle = '#87CEEB';
+    ctx.fillRect(0, 0, W, H);
+    const gradient = ctx.createLinearGradient(0, 0, 0, H);
+    gradient.addColorStop(0, 'rgba(135, 206, 235, 0.3)');
+    gradient.addColorStop(1, 'rgba(70, 130, 180, 0.5)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, W, H);
+    drawBackground();
     drawTerrain();
     drawBike();
   }
