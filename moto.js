@@ -131,15 +131,16 @@
   function drawBike() {
     const sx = bike.x - cameraX;
     const sy = bike.y;
-    const cos = Math.cos(bike.angle);
-    const sin = Math.sin(bike.angle);
     const half = BIKE_LENGTH / 2;
 
     ctx.save();
     ctx.translate(sx, sy);
-    ctx.rotate(bike.angle);
+    // Physics uses `bike.angle` such that wheels move opposite direction on screen.
+    // Rotating by `-bike.angle` aligns the sprite with the collision wheels.
+    ctx.rotate(-bike.angle);
 
     function wheel(cx) {
+      // Tire
       ctx.fillStyle = '#1a1a1a';
       ctx.beginPath();
       ctx.arc(cx, 0, WHEEL_R, 0, Math.PI * 2);
@@ -147,10 +148,14 @@
       ctx.strokeStyle = '#333';
       ctx.lineWidth = 3;
       ctx.stroke();
+
+      // Rim
       ctx.fillStyle = '#2a2a2a';
       ctx.beginPath();
       ctx.arc(cx, 0, WHEEL_R - 4, 0, Math.PI * 2);
       ctx.fill();
+
+      // Spokes
       ctx.strokeStyle = '#444';
       ctx.lineWidth = 1;
       ctx.stroke();
@@ -162,63 +167,109 @@
         ctx.stroke();
       }
     }
-    wheel(-half);
-    wheel(half);
 
+    const rearX = -half;
+    const frontX = half;
+    wheel(rearX);
+    wheel(frontX);
+
+    // Rear shock / swingarm
     ctx.strokeStyle = '#333';
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 4;
     ctx.beginPath();
-    ctx.moveTo(-half, 0);
-    ctx.lineTo(-half + 14, -10);
-    ctx.lineTo(half - 8, -10);
-    ctx.lineTo(half, 0);
+    ctx.moveTo(rearX + 10, -2);
+    ctx.lineTo(rearX + 18, -8);
     ctx.stroke();
 
-    ctx.fillStyle = '#252525';
+    // Frame / backbone
+    ctx.strokeStyle = '#2f2f2f';
+    ctx.lineWidth = 6;
+    ctx.lineCap = 'round';
     ctx.beginPath();
-    ctx.moveTo(-half + 4, 2);
-    ctx.lineTo(-half + 18, -8);
-    ctx.lineTo(half - 12, -8);
-    ctx.lineTo(half - 4, 2);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle = '#444';
-    ctx.lineWidth = 1;
+    ctx.moveTo(rearX + 12, -1);
+    ctx.lineTo(-4, -9);
+    ctx.lineTo(frontX - 10, -14);
     ctx.stroke();
+    ctx.lineCap = 'butt';
 
+    // Seat
     ctx.fillStyle = '#3d2914';
-    ctx.beginPath();
-    ctx.moveTo(-12, -10);
-    ctx.lineTo(-10, -14);
-    ctx.lineTo(10, -14);
-    ctx.lineTo(12, -10);
-    ctx.quadraticCurveTo(12, -8, 10, -8);
-    ctx.lineTo(-10, -8);
-    ctx.quadraticCurveTo(-12, -8, -12, -10);
-    ctx.closePath();
-    ctx.fill();
     ctx.strokeStyle = '#5c4033';
     ctx.lineWidth = 1;
-    ctx.stroke();
-
-    ctx.fillStyle = '#1a1a1a';
-    ctx.fillRect(half - 2, -12, 4, 14);
-    ctx.fillRect(half + 8, -13, 2, 12);
-    ctx.strokeStyle = '#333';
-    ctx.strokeRect(half - 2, -12, 4, 14);
-
     ctx.beginPath();
-    ctx.moveTo(half, -12);
-    ctx.lineTo(half + 10, -14);
-    ctx.lineTo(half + 12, -14);
-    ctx.stroke();
-
-    ctx.fillStyle = '#2d2d2d';
-    ctx.beginPath();
-    ctx.ellipse(-4, -11, 6, 4, 0, 0, Math.PI * 2);
+    ctx.moveTo(-12, -10);
+    ctx.lineTo(-6, -14);
+    ctx.quadraticCurveTo(0, -16, 6, -14);
+    ctx.lineTo(12, -10);
+    ctx.quadraticCurveTo(8, -8, 4, -8);
+    ctx.lineTo(-4, -8);
+    ctx.quadraticCurveTo(-8, -8, -12, -10);
+    ctx.closePath();
     ctx.fill();
-    ctx.strokeStyle = '#444';
     ctx.stroke();
+
+    // Engine block
+    ctx.fillStyle = '#1f1f1f';
+    ctx.strokeStyle = '#444';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.rect(-10, -9, 20, 10);
+    ctx.fill();
+    ctx.stroke();
+
+    // Exhaust
+    ctx.strokeStyle = '#6a6a6a';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(-2, -5);
+    ctx.lineTo(6, -8);
+    ctx.stroke();
+
+    // Forks + steering head
+    ctx.strokeStyle = '#444';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(frontX - 6, -2);
+    ctx.lineTo(frontX - 10, -16);
+    ctx.moveTo(frontX + 6, -2);
+    ctx.lineTo(frontX + 10, -16);
+    ctx.stroke();
+
+    ctx.fillStyle = '#2a2a2a';
+    ctx.strokeStyle = '#444';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(frontX, -16, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Handlebar
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(frontX - 2, -18);
+    ctx.lineTo(frontX + 12, -14);
+    ctx.moveTo(frontX - 2, -18);
+    ctx.lineTo(frontX + 12, -22);
+    ctx.stroke();
+
+    // Rider (tiny for readability)
+    ctx.fillStyle = '#111';
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(-2, -23, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#222';
+    ctx.beginPath();
+    ctx.moveTo(-3, -19);
+    ctx.lineTo(-8, -8);
+    ctx.lineTo(8, -8);
+    ctx.lineTo(3, -19);
+    ctx.closePath();
+    ctx.fill();
 
     ctx.restore();
   }
