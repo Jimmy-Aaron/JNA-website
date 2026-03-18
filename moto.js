@@ -129,28 +129,97 @@
   }
 
   function drawBike() {
-    const cos = Math.cos(bike.angle);
-    const sin = Math.sin(bike.angle);
     const sx = bike.x - cameraX;
     const sy = bike.y;
+    const cos = Math.cos(bike.angle);
+    const sin = Math.sin(bike.angle);
+    const half = BIKE_LENGTH / 2;
+
     ctx.save();
     ctx.translate(sx, sy);
     ctx.rotate(bike.angle);
-    ctx.fillStyle = '#333';
-    ctx.fillRect(-BIKE_LENGTH / 2 - 4, -BIKE_HEIGHT / 2, 8, BIKE_HEIGHT);
-    ctx.fillStyle = '#8B4513';
-    ctx.fillRect(-BIKE_LENGTH / 2, -BIKE_HEIGHT / 2 - 2, BIKE_LENGTH, BIKE_HEIGHT + 4);
-    ctx.fillStyle = '#222';
+
+    function wheel(cx) {
+      ctx.fillStyle = '#1a1a1a';
+      ctx.beginPath();
+      ctx.arc(cx, 0, WHEEL_R, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.fillStyle = '#2a2a2a';
+      ctx.beginPath();
+      ctx.arc(cx, 0, WHEEL_R - 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#444';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      for (let i = 0; i < 8; i++) {
+        const a = (i / 8) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(a) * (WHEEL_R - 5), Math.sin(a) * (WHEEL_R - 5));
+        ctx.lineTo(cx + Math.cos(a) * 4, Math.sin(a) * 4);
+        ctx.stroke();
+      }
+    }
+    wheel(-half);
+    wheel(half);
+
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.arc(-BIKE_LENGTH / 2, 0, WHEEL_R, 0, Math.PI * 2);
+    ctx.moveTo(-half, 0);
+    ctx.lineTo(-half + 14, -10);
+    ctx.lineTo(half - 8, -10);
+    ctx.lineTo(half, 0);
+    ctx.stroke();
+
+    ctx.fillStyle = '#252525';
+    ctx.beginPath();
+    ctx.moveTo(-half + 4, 2);
+    ctx.lineTo(-half + 18, -8);
+    ctx.lineTo(half - 12, -8);
+    ctx.lineTo(half - 4, 2);
+    ctx.closePath();
     ctx.fill();
     ctx.strokeStyle = '#444';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 1;
     ctx.stroke();
+
+    ctx.fillStyle = '#3d2914';
     ctx.beginPath();
-    ctx.arc(BIKE_LENGTH / 2, 0, WHEEL_R, 0, Math.PI * 2);
+    ctx.moveTo(-12, -10);
+    ctx.lineTo(-10, -14);
+    ctx.lineTo(10, -14);
+    ctx.lineTo(12, -10);
+    ctx.quadraticCurveTo(12, -8, 10, -8);
+    ctx.lineTo(-10, -8);
+    ctx.quadraticCurveTo(-12, -8, -12, -10);
+    ctx.closePath();
     ctx.fill();
+    ctx.strokeStyle = '#5c4033';
+    ctx.lineWidth = 1;
     ctx.stroke();
+
+    ctx.fillStyle = '#1a1a1a';
+    ctx.fillRect(half - 2, -12, 4, 14);
+    ctx.fillRect(half + 8, -13, 2, 12);
+    ctx.strokeStyle = '#333';
+    ctx.strokeRect(half - 2, -12, 4, 14);
+
+    ctx.beginPath();
+    ctx.moveTo(half, -12);
+    ctx.lineTo(half + 10, -14);
+    ctx.lineTo(half + 12, -14);
+    ctx.stroke();
+
+    ctx.fillStyle = '#2d2d2d';
+    ctx.beginPath();
+    ctx.ellipse(-4, -11, 6, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#444';
+    ctx.stroke();
+
     ctx.restore();
   }
 
