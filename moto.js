@@ -150,9 +150,8 @@
     const targetX = Math.min(worldX, maxX);
     while (nextTreeX < targetX) {
       const idx = trees.length;
-      const spacing = 90 + randAt(200000 + idx * 17) * 140;
+      const spacing = 70 + randAt(200000 + idx * 17) * 95;
       nextTreeX += spacing;
-      if (nextTreeX < 50) continue;
 
       const h = 50 + randAt(300000 + idx * 19) * 90;
       const variant = randAt(400000 + idx * 23);
@@ -161,8 +160,8 @@
   }
 
   function drawBackground() {
-    const par = 0.35; // parallax strength
-    const s = 0.6; // overall distant scale
+    const par = 0.28; // parallax strength
+    const s = 0.85; // overall distant scale
 
     ensureTreesUpTo(cameraX + W + 600);
     for (let i = 0; i < trees.length; i++) {
@@ -173,12 +172,12 @@
       const screenX = dx * par;
       const baseY = getGroundAt(t.x).y;
 
-      const trunkH = t.h * 0.35 * s;
-      const foliageH = t.h * 0.65 * s;
+      const trunkH = t.h * 0.42 * s;
+      const foliageH = t.h * 0.75 * s;
 
       ctx.save();
       ctx.translate(screenX, baseY);
-      ctx.globalAlpha = 0.55;
+      ctx.globalAlpha = 0.7;
 
       // Trunk
       ctx.fillStyle = '#3a2a1a';
@@ -188,17 +187,18 @@
       const leaf1 = t.variant > 0.66 ? '#1f5a22' : t.variant > 0.33 ? '#1a4d1f' : '#16421a';
       const leaf2 = t.variant > 0.66 ? '#1a4d1f' : t.variant > 0.33 ? '#175013' : '#123b16';
 
+      // 3-layer blob foliage (bigger so it reads as trees).
       ctx.fillStyle = leaf2;
       ctx.beginPath();
-      ctx.arc(0, -trunkH - foliageH * 0.3, foliageH * 0.42, 0, Math.PI * 2);
+      ctx.arc(0, -trunkH - foliageH * 0.25, foliageH * 0.48, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = leaf1;
       ctx.beginPath();
-      ctx.arc(0, -trunkH - foliageH * 0.55, foliageH * 0.34, 0, Math.PI * 2);
+      ctx.arc(0, -trunkH - foliageH * 0.48, foliageH * 0.38, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = leaf2;
       ctx.beginPath();
-      ctx.arc(0, -trunkH - foliageH * 0.75, foliageH * 0.26, 0, Math.PI * 2);
+      ctx.arc(0, -trunkH - foliageH * 0.70, foliageH * 0.30, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.restore();
@@ -571,7 +571,9 @@
   function loop() {
     if (!running || !bike) return;
     const throttle = keys[' '] || keys['ArrowUp'];
-    const tilt = (keys['ArrowRight'] ? 1 : 0) - (keys['ArrowLeft'] ? 1 : 0);
+    // Invert so arrow directions feel natural:
+    //   Left (lean back) should lean "back", Right (lean forward) should lean "forward".
+    const tilt = (keys['ArrowLeft'] ? 1 : 0) - (keys['ArrowRight'] ? 1 : 0);
     const crashed = updateBike(throttle, tilt);
     score = bike.x;
     scoreEl.textContent = Math.floor(score);
@@ -585,8 +587,8 @@
     gradient.addColorStop(1, 'rgba(70, 130, 180, 0.5)');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, W, H);
-    drawBackground();
     drawTerrain();
+    drawBackground();
     drawBike();
     if (crashed) {
       gameOver();
@@ -612,7 +614,7 @@
     seed = Date.now() % 100000;
     baseSeed = seed;
     trees = [];
-    nextTreeX = 0;
+    nextTreeX = -200;
     groundPattern = null;
     suspensionPos = 0;
     suspensionVel = 0;
@@ -631,7 +633,7 @@
     seed = Date.now() % 100000;
     baseSeed = seed;
     trees = [];
-    nextTreeX = 0;
+    nextTreeX = -200;
     groundPattern = null;
     suspensionPos = 0;
     suspensionVel = 0;
@@ -647,8 +649,8 @@
     gradient.addColorStop(1, 'rgba(70, 130, 180, 0.5)');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, W, H);
-    drawBackground();
     drawTerrain();
+    drawBackground();
     drawBike();
   }
 
