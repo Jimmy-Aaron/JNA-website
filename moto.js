@@ -8,7 +8,7 @@
 
   const W = canvas.width = 900;
   const H = canvas.height = 400;
-  const GRAVITY = 0.45;
+  const GRAVITY = 0.22;
   const THROTTLE = 0.32;
   const FRICTION_GROUND = 0.92;
   const FRICTION_AIR = 0.998;
@@ -17,7 +17,7 @@
   const BIKE_LENGTH = 36;
   const BIKE_HEIGHT = 18;
   const WHEEL_R = 10;
-  const GROUND_BASE = H - 60;
+  const GROUND_BASE = H - 160;
   const CAMERA_LEAD = 120;
   const SEGMENT_LENGTH = 80;
   const MAX_SLOPE = 0.45;
@@ -27,8 +27,8 @@
   const JUMP_SEGMENTS = 5;
   const JUMP_BOOST_MIN = 90;
   const JUMP_BOOST_MAX = 160;
-  const GROUND_MIN = GROUND_BASE - 170;
-  const GROUND_MAX = GROUND_BASE + 95;
+  const GROUND_MIN = GROUND_BASE - 100;
+  const GROUND_MAX = GROUND_BASE + 60;
 
   // Jet (rocket boost) power
   const JET_THRUST = 0.85; // extra vx while holding J

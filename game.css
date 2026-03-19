@@ -132,9 +132,21 @@
   background: #fff;
 }
 
+.game-embed-wrap iframe {
+  display: block;
+  width: 100%;
+  max-width: 900px;
+  height: 600px;
+  border: none;
+  border-radius: 8px;
+}
+
 @media (max-width: 860px) {
   #gameCanvas {
     width: 100%;
     height: auto;
+  }
+  .game-embed-wrap iframe {
+    height: 500px;
   }
 }
