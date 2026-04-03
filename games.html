@@ -21,21 +21,220 @@
     <p class="page-description">Pick a game below.</p>
     <div class="game-cards">
       <a href="games.html#breakout-game" class="game-card">
+        <div class="game-card-preview">
+          <!-- Breakout: bricks, ball, paddle -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 110" aria-hidden="true">
+            <rect width="200" height="110" fill="#0a0a12"/>
+            <!-- Row 1: red bricks -->
+            <rect x="6"   y="8"  width="33" height="12" rx="2" fill="#c62828"/>
+            <rect x="43"  y="8"  width="33" height="12" rx="2" fill="#c62828"/>
+            <rect x="80"  y="8"  width="33" height="12" rx="2" fill="#c62828"/>
+            <rect x="117" y="8"  width="33" height="12" rx="2" fill="#c62828"/>
+            <rect x="154" y="8"  width="40" height="12" rx="2" fill="#c62828"/>
+            <!-- Row 2: orange bricks (one missing – got hit) -->
+            <rect x="6"   y="24" width="33" height="12" rx="2" fill="#e65100"/>
+            <rect x="43"  y="24" width="33" height="12" rx="2" fill="#e65100"/>
+            <rect x="117" y="24" width="33" height="12" rx="2" fill="#e65100"/>
+            <rect x="154" y="24" width="40" height="12" rx="2" fill="#e65100"/>
+            <!-- Row 3: gold bricks (two missing) -->
+            <rect x="6"   y="40" width="33" height="12" rx="2" fill="#f9a825"/>
+            <rect x="43"  y="40" width="33" height="12" rx="2" fill="#f9a825"/>
+            <rect x="80"  y="40" width="33" height="12" rx="2" fill="#f9a825"/>
+            <rect x="154" y="40" width="40" height="12" rx="2" fill="#f9a825"/>
+            <!-- Brick highlight strips -->
+            <rect x="7"   y="9"  width="20" height="3" rx="1" fill="rgba(255,255,255,0.18)"/>
+            <rect x="44"  y="9"  width="20" height="3" rx="1" fill="rgba(255,255,255,0.18)"/>
+            <rect x="81"  y="9"  width="20" height="3" rx="1" fill="rgba(255,255,255,0.18)"/>
+            <!-- Ball trail -->
+            <circle cx="75" cy="60" r="4"  fill="rgba(255,255,255,0.15)"/>
+            <circle cx="82" cy="66" r="5"  fill="rgba(255,255,255,0.35)"/>
+            <circle cx="90" cy="73" r="6.5" fill="#ffffff"/>
+            <!-- Paddle -->
+            <rect x="50" y="96" width="100" height="9" rx="5" fill="#64b5f6"/>
+            <rect x="56" y="97" width="45"  height="3" rx="2" fill="rgba(255,255,255,0.3)"/>
+          </svg>
+        </div>
         <h2 class="game-card-title">Breakout</h2>
         <p class="game-card-desc">Move the paddle with your mouse or arrow keys. Break all the bricks without losing the ball!</p>
         <span class="game-card-play">Play →</span>
       </a>
+
       <a href="tetris.html" class="game-card">
+        <div class="game-card-preview">
+          <!-- Tetris: well with coloured blocks + falling T-piece -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 110" aria-hidden="true">
+            <rect width="200" height="110" fill="#080810"/>
+            <!-- Well walls -->
+            <rect x="44" y="4"   width="2"   height="102" fill="#2a2a3a"/>
+            <rect x="154" y="4"  width="2"   height="102" fill="#2a2a3a"/>
+            <rect x="44" y="104" width="112" height="2"   fill="#2a2a3a"/>
+            <!-- Subtle grid lines -->
+            <line x1="46" y1="4" x2="46" y2="104" stroke="#111120" stroke-width="0.5"/>
+            <!-- Block size 15x15, gap 1, col x = 46+col*16 -->
+            <!-- Bottom row (y=88): full row of mixed colours -->
+            <rect x="46"  y="88" width="15" height="15" fill="#00bcd4"/>
+            <rect x="62"  y="88" width="15" height="15" fill="#9c27b0"/>
+            <rect x="78"  y="88" width="15" height="15" fill="#ff5722"/>
+            <rect x="94"  y="88" width="15" height="15" fill="#ffd600"/>
+            <rect x="110" y="88" width="15" height="15" fill="#4caf50"/>
+            <rect x="126" y="88" width="15" height="15" fill="#2196f3"/>
+            <rect x="142" y="88" width="15" height="15" fill="#f44336"/>
+            <!-- Row 4 (y=72): gap at col 2 (x=78) -->
+            <rect x="46"  y="72" width="15" height="15" fill="#ff5722"/>
+            <rect x="62"  y="72" width="15" height="15" fill="#ffd600"/>
+            <rect x="94"  y="72" width="15" height="15" fill="#00bcd4"/>
+            <rect x="110" y="72" width="15" height="15" fill="#9c27b0"/>
+            <rect x="126" y="72" width="15" height="15" fill="#f44336"/>
+            <rect x="142" y="72" width="15" height="15" fill="#4caf50"/>
+            <!-- Row 3 (y=56): L-piece + others -->
+            <rect x="78"  y="56" width="15" height="15" fill="#ff5722"/>
+            <rect x="94"  y="56" width="15" height="15" fill="#ff5722"/>
+            <rect x="110" y="56" width="15" height="15" fill="#ff5722"/>
+            <rect x="126" y="56" width="15" height="15" fill="#2196f3"/>
+            <rect x="142" y="56" width="15" height="15" fill="#2196f3"/>
+            <!-- Row 2 (y=40) -->
+            <rect x="94"  y="40" width="15" height="15" fill="#f44336"/>
+            <rect x="110" y="40" width="15" height="15" fill="#f44336"/>
+            <rect x="126" y="40" width="15" height="15" fill="#4caf50"/>
+            <rect x="142" y="40" width="15" height="15" fill="#4caf50"/>
+            <!-- Falling T-piece (purple) at top -->
+            <rect x="78"  y="8"  width="15" height="15" fill="#ce93d8"/>
+            <rect x="94"  y="8"  width="15" height="15" fill="#ce93d8"/>
+            <rect x="110" y="8"  width="15" height="15" fill="#ce93d8"/>
+            <rect x="94"  y="24" width="15" height="15" fill="#ce93d8"/>
+            <!-- Piece inner highlight -->
+            <rect x="79"  y="9"  width="7" height="3" rx="1" fill="rgba(255,255,255,0.25)"/>
+            <rect x="95"  y="9"  width="7" height="3" rx="1" fill="rgba(255,255,255,0.25)"/>
+            <rect x="111" y="9"  width="7" height="3" rx="1" fill="rgba(255,255,255,0.25)"/>
+          </svg>
+        </div>
         <h2 class="game-card-title">Tetris</h2>
         <p class="game-card-desc">Clear lines with falling blocks. Hold piece, ghost piece, levels, and music.</p>
         <span class="game-card-play">Play →</span>
       </a>
+
       <a href="moto.html" class="game-card">
+        <div class="game-card-preview">
+          <!-- Dirt Bike Moto: hills, bike, rider -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 110" aria-hidden="true">
+            <!-- Sky gradient -->
+            <defs>
+              <linearGradient id="msky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"   stop-color="#3a7fd5"/>
+                <stop offset="100%" stop-color="#a8d8f0"/>
+              </linearGradient>
+            </defs>
+            <rect width="200" height="110" fill="url(#msky)"/>
+            <!-- Sun -->
+            <circle cx="170" cy="22" r="14" fill="#FFE033" opacity="0.9"/>
+            <circle cx="170" cy="22" r="20" fill="#FFE033" opacity="0.15"/>
+            <!-- Distant hill (lighter) -->
+            <path d="M 0,75 Q 60,45 120,70 Q 160,55 200,65 L 200,110 L 0,110 Z" fill="#3a6b20" opacity="0.5"/>
+            <!-- Main ground hill -->
+            <path d="M 0,88 Q 40,72 80,85 Q 110,72 140,80 L 200,84 L 200,110 L 0,110 Z" fill="#2d5016"/>
+            <!-- Ground top edge highlight -->
+            <path d="M 0,88 Q 40,72 80,85 Q 110,72 140,80 L 200,84" fill="none" stroke="#4a7a28" stroke-width="1.5"/>
+
+            <!-- === DIRT BIKE (facing right, going up small hill) === -->
+            <!-- Rear wheel -->
+            <circle cx="90" cy="82" r="11" fill="#111"/>
+            <circle cx="90" cy="82" r="8"  fill="none" stroke="#999" stroke-width="1.5"/>
+            <circle cx="90" cy="82" r="2.5" fill="#777"/>
+            <!-- Front wheel -->
+            <circle cx="128" cy="79" r="9"  fill="#111"/>
+            <circle cx="128" cy="79" r="6.5" fill="none" stroke="#999" stroke-width="1.5"/>
+            <circle cx="128" cy="79" r="2"  fill="#777"/>
+            <!-- Swingarm -->
+            <line x1="92" y1="81" x2="103" y2="68" stroke="#222" stroke-width="4" stroke-linecap="round"/>
+            <!-- Frame body -->
+            <polygon points="103,68 122,65 118,72 100,74" fill="#1a1a1a"/>
+            <!-- Front fork -->
+            <line x1="122" y1="65" x2="128" y2="79" stroke="#3a3a3a" stroke-width="4" stroke-linecap="round"/>
+            <!-- Gas tank (red) -->
+            <ellipse cx="112" cy="63" rx="12" ry="6" fill="#cc1800"/>
+            <!-- Seat -->
+            <rect x="100" y="60" width="14" height="4" rx="2" fill="#111"/>
+            <!-- Exhaust -->
+            <path d="M 100,70 Q 94,73 91,70" fill="none" stroke="#777" stroke-width="3" stroke-linecap="round"/>
+            <!-- Rider torso -->
+            <rect x="107" y="51" width="10" height="13" rx="3" fill="#1840b0" transform="rotate(-8,112,57)"/>
+            <!-- Helmet (red) -->
+            <circle cx="115" cy="49" r="8"  fill="#cc1500"/>
+            <circle cx="115" cy="49" r="8"  fill="none" stroke="#8b0f00" stroke-width="1"/>
+            <!-- Visor -->
+            <path d="M 110,50 Q 114,55 121,50" fill="rgba(40,60,200,0.7)" stroke="none"/>
+            <!-- Helmet highlight -->
+            <ellipse cx="113" cy="46" rx="3" ry="2" fill="rgba(255,255,255,0.25)"/>
+            <!-- Dust puff (rolling) -->
+            <circle cx="82" cy="87" r="5"  fill="rgba(200,160,100,0.35)"/>
+            <circle cx="77" cy="85" r="3.5" fill="rgba(200,160,100,0.2)"/>
+          </svg>
+        </div>
         <h2 class="game-card-title">Dirt Bike Moto</h2>
         <p class="game-card-desc">Ride the hills. Gas and lean to land clean. How far can you go?</p>
         <span class="game-card-play">Play →</span>
       </a>
+
       <a href="games.html#moto-x3m-game" class="game-card">
+        <div class="game-card-preview">
+          <!-- Moto X3M: ramp jump scene -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 110" aria-hidden="true">
+            <defs>
+              <linearGradient id="x3sky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"   stop-color="#1a2a4a"/>
+                <stop offset="100%" stop-color="#2e5080"/>
+              </linearGradient>
+            </defs>
+            <rect width="200" height="110" fill="url(#x3sky)"/>
+            <!-- Stars -->
+            <circle cx="20"  cy="12" r="1.2" fill="#fff" opacity="0.8"/>
+            <circle cx="55"  cy="8"  r="1"   fill="#fff" opacity="0.7"/>
+            <circle cx="90"  cy="15" r="1.5" fill="#fff" opacity="0.9"/>
+            <circle cx="145" cy="10" r="1"   fill="#fff" opacity="0.6"/>
+            <circle cx="180" cy="18" r="1.2" fill="#fff" opacity="0.8"/>
+            <circle cx="35"  cy="30" r="0.8" fill="#fff" opacity="0.5"/>
+            <!-- Ground -->
+            <rect x="0" y="90" width="200" height="20" fill="#333"/>
+            <rect x="0" y="89" width="200" height="2"  fill="#444"/>
+            <!-- Ramp (left side) -->
+            <polygon points="5,90 55,90 55,55" fill="#555"/>
+            <polygon points="5,90 55,90 55,55" fill="none" stroke="#666" stroke-width="1.5"/>
+            <!-- Ramp stripes -->
+            <line x1="20" y1="90" x2="55" y2="72" stroke="#444" stroke-width="2"/>
+            <line x1="35" y1="90" x2="55" y2="62" stroke="#444" stroke-width="2"/>
+            <!-- Landing ramp (right) -->
+            <polygon points="145,90 200,90 145,68" fill="#555"/>
+            <polygon points="145,90 200,90 145,68" fill="none" stroke="#666" stroke-width="1.5"/>
+            <!-- Obstacle spike in middle -->
+            <polygon points="110,90 118,90 114,78" fill="#cc3300"/>
+            <polygon points="120,90 128,90 124,80" fill="#cc3300"/>
+            <!-- === BIKE MID-AIR (tilted back slightly) === -->
+            <!-- Rear wheel -->
+            <circle cx="80"  cy="55" r="10" fill="#111"/>
+            <circle cx="80"  cy="55" r="7"  fill="none" stroke="#aaa" stroke-width="1.5"/>
+            <circle cx="80"  cy="55" r="2"  fill="#888"/>
+            <!-- Front wheel -->
+            <circle cx="116" cy="50" r="8"  fill="#111"/>
+            <circle cx="116" cy="50" r="5.5" fill="none" stroke="#aaa" stroke-width="1.5"/>
+            <circle cx="116" cy="50" r="1.8" fill="#888"/>
+            <!-- Frame (tilted back ~-10 deg) -->
+            <polygon points="82,54 90,42 110,40 106,48" fill="#1a1a1a" transform="rotate(-8,96,47)"/>
+            <!-- Tank -->
+            <ellipse cx="99" cy="42" rx="11" ry="5.5" fill="#e62000" transform="rotate(-8,99,42)"/>
+            <!-- Fork -->
+            <line x1="110" y1="40" x2="116" y2="50" stroke="#3a3a3a" stroke-width="4" stroke-linecap="round" transform="rotate(-8,113,45)"/>
+            <!-- Rider -->
+            <rect x="90" y="31" width="9" height="12" rx="2" fill="#1840b0" transform="rotate(-8,94,37)"/>
+            <!-- Helmet -->
+            <circle cx="100" cy="29" r="7.5" fill="#cc1500"/>
+            <path d="M 95,31 Q 99,36 106,31" fill="rgba(40,60,200,0.7)"/>
+            <ellipse cx="98" cy="26" rx="2.8" ry="1.8" fill="rgba(255,255,255,0.25)"/>
+            <!-- Speed lines -->
+            <line x1="30" y1="52" x2="55" y2="52" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+            <line x1="22" y1="58" x2="50" y2="58" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+            <line x1="28" y1="64" x2="48" y2="64" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+          </svg>
+        </div>
         <h2 class="game-card-title">Moto X3M</h2>
         <p class="game-card-desc">22 levels of motocross madness. Ramps, tricks, and obstacles by MadPuffers.</p>
         <span class="game-card-play">Play →</span>
