@@ -229,7 +229,7 @@ body {
 
 .video-block video {
   width: 100%;
-  max-width: 520px;
+  max-width: 340px;
   border-radius: 6px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.5);
   cursor: pointer;
