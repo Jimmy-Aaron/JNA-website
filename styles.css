@@ -152,10 +152,16 @@ body {
   color: inherit;
   text-decoration: none;
   display: block;
+  cursor: pointer;
+}
+
+.project-item:has(a):hover {
+  border-color: var(--accent);
+  cursor: pointer;
 }
 
 .project-item a:hover {
-  color: #fff;
+  color: var(--accent);
 }
 
 .back-link {
