@@ -148,6 +148,91 @@ body {
   background: rgba(255, 255, 255, 0.04);
 }
 
+.project-item a {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+}
+
+.project-item a:hover {
+  color: #fff;
+}
+
+.back-link {
+  display: inline-block;
+  color: #888;
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.back-link:hover {
+  color: #ccc;
+}
+
+.project-detail {
+  max-width: 860px;
+}
+
+.project-body {
+  color: #c0c0c0;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.photo-frame {
+  background: #fff;
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+.photo-frame img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  border-radius: 2px;
+}
+
+.photo-frame--single {
+  display: inline-block;
+  margin-top: 2rem;
+}
+
+.photo-frame--single img {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 480px;
+}
+
+.video-block {
+  margin-bottom: 1rem;
+}
+
+.video-block video {
+  width: 100%;
+  max-width: 700px;
+  border-radius: 6px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .photo-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .site-footer {
   text-align: center;
   padding: 1rem 1.5rem;
