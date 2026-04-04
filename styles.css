@@ -220,6 +220,13 @@ body {
   margin-bottom: 1rem;
 }
 
+.video-caption {
+  color: #888;
+  font-size: 0.9rem;
+  margin-top: 0.6rem;
+  font-style: italic;
+}
+
 .video-block video {
   width: 100%;
   max-width: 520px;
