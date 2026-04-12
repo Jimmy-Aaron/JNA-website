@@ -50,6 +50,9 @@
   // Tricks
   const FLIP_THRESHOLD = Math.PI * 1.8;
 
+  // Boost recharge lock — prevents stutter when fuel hits 0
+  const FUEL_BOOST_UNLOCK = 60; // must reach this before boost re-enables
+
   // --- Biome zones ---
   // zone 0 = grass/forest, 1 = dirt, 2 = desert
   // Returns a float 0–2 with smooth transitions
@@ -109,6 +112,7 @@
   let jetParticles = [];
   let dustParticles = [];
   let fuelLevel = MAX_FUEL;
+  let boostLocked = false;
   let jumpChance = 0.08;
 
   // Tricks
@@ -1221,7 +1225,9 @@
     visualTilt += (tilt * 0.18 - visualTilt) * 0.12;
     bike.vx *= FRICTION_AIR; bike.vy *= FRICTION_AIR;
     if (throttle) bike.vx += THROTTLE;
-    const jetOn = jetActive && fuelLevel > 0;
+    if (fuelLevel <= 0) boostLocked = true;
+    if (boostLocked && fuelLevel >= FUEL_BOOST_UNLOCK) boostLocked = false;
+    const jetOn = jetActive && fuelLevel > 0 && !boostLocked;
     if (jetOn) { bike.vx += JET_THRUST; fuelLevel = Math.max(0, fuelLevel - FUEL_DRAIN); }
     if (bike.vx > JET_MAX_VX) bike.vx = JET_MAX_VX;
     bike.vy += GRAVITY; bike.x += bike.vx; bike.y += bike.vy;
@@ -1269,6 +1275,16 @@
       const landX = (back.x + front.x) / 2;
       spawnDust(landX, getGroundAt(landX).y, Math.floor(impact * 10 + 3));
       audio.land(impact);
+      // Crash on bad landing angle after a flip attempt
+      if (airborneFrames > 18 && Math.abs(airborneRotation) >= Math.PI * 0.6) {
+        let a = bike.angle % (Math.PI * 2);
+        if (a > Math.PI) a -= Math.PI * 2;
+        if (a < -Math.PI) a += Math.PI * 2;
+        if (Math.abs(a) > Math.PI * 0.65) {
+          airborneFrames = 0; airborneRotation = 0;
+          return true;
+        }
+      }
       if (airborneFrames > 18 && Math.abs(airborneRotation) >= FLIP_THRESHOLD) {
         const flips = Math.floor(Math.abs(airborneRotation) / (Math.PI * 2) + 0.35);
         const name = (flips >= 2 ? flips + 'x ' : '') + (airborneRotation > 0 ? 'Backflip' : 'Frontflip') + '!';
@@ -1305,14 +1321,17 @@
       bike.vy = 0; bike.vx *= FRICTION_GROUND;
     } else if (onGroundBack || onGroundFront) {
       const g = onGroundBack ? gBack : gFront;
-      if (Math.abs(bike.angle) > 1.2) return true;
+      const inFlip = !onGroundNow && Math.abs(airborneRotation) >= Math.PI * 0.6;
+      if (Math.abs(bike.angle) > 1.2 && !inFlip) return true;
       bike.angle = bike.angle * 0.85 + Math.atan(g.slope) * 0.15;
       bike.y = g.y - BIKE_HEIGHT / 2;
       bike.vy *= 0.5; bike.vx *= FRICTION_GROUND;
     }
 
     if (bike.y > H + 50) return true;
-    if (Math.abs(bike.angle) > Math.PI * 0.85) return true;
+    // Only crash from angle if on ground, or if airborne but not mid-flip
+    const inFlipAir = !onGroundNow && Math.abs(airborneRotation) >= Math.PI * 0.6;
+    if (Math.abs(bike.angle) > Math.PI * 0.85 && !inFlipAir) return true;
     if (back.y > getGroundAt(back.x).y + 18 || front.y > getGroundAt(front.x).y + 18) return true;
     return false;
   }
@@ -1414,7 +1433,7 @@
     decorations = []; nextDecoX = -200;
     jetParticles = []; dustParticles = [];
     suspensionPos = 0; suspensionVel = 0; wasOnGround = false;
-    fuelLevel = MAX_FUEL; totalTrickBonus = 0; trickText = ''; trickTimer = 0;
+    fuelLevel = MAX_FUEL; boostLocked = false; totalTrickBonus = 0; trickText = ''; trickTimer = 0;
     airborneFrames = 0; airborneRotation = 0; visualTilt = 0;
     initClouds(); initTerrain(); initBike();
     score = 0; scoreEl.textContent = '0';
