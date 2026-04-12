@@ -62,9 +62,52 @@ body {
 .page-home .nav-link[href="index.html"]:not(.nav-brand),
 .page-projects .nav-link[href="projects.html"],
 .page-harley .nav-link[href="harley-work.html"],
+.page-woodworking .nav-link[href="custom-woodworking.html"],
 .page-games .nav-link[href="games.html"] {
   color: var(--accent);
   font-weight: 600;
+}
+
+/* Lightbox overlay */
+.lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+.lightbox.open {
+  display: flex;
+}
+.lightbox img {
+  max-width: 92vw;
+  max-height: 90vh;
+  border-radius: 4px;
+  box-shadow: 0 8px 60px rgba(0,0,0,0.7);
+  cursor: default;
+  object-fit: contain;
+}
+.lightbox-close {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+  line-height: 1;
+  opacity: 0.8;
+}
+.lightbox-close:hover { opacity: 1; }
+
+/* Make thumbnails show pointer */
+.photo-frame img,
+.project-card-thumb {
+  cursor: zoom-in;
 }
 
 .hero {
